@@ -3,7 +3,7 @@ from collections import deque
 edges = []
 assign = []
 domain = []
-arc = []
+adj = []
 neighbours = 0
 
 #finding minimum remaining value 
@@ -27,14 +27,6 @@ def heuristic_lcv(node, edges, domain):
         color = [c[0] for c in lcv]    
     return color
 
-def ac3(q, domain):
-    while len(q) != 0:
-        p = q.popleft() #remove-first(queue)
-        if (len(domain[p[1]]) == 1):
-            if(domain[p[1]][0] in domain[p[0]]):
-                domain[p[0]].remove(domain[p[1]][0])
-    return domain
-
 #backtracking algorithm 
 def csp(assign, edges, domain):
     
@@ -53,10 +45,13 @@ def csp(assign, edges, domain):
                 
                 for j in edges[node]:
                     if assign[j] != 1:
-                        arc.append([j, node])
-            
-                domain = ac3(deque(arc), domain)
-                
+                        adj.append([j, node])
+
+                q = deque(adj)
+                while len(q) != 0:
+                    p = q.popleft() #remove-first(queue)
+                    if domain[p[1]][0] in domain[p[0]]:
+                        domain[p[0]].remove(domain[p[1]][0])
                 edges[node] = color
                 assign[node] = 1
                 answer = csp(assign, edges, domain)
@@ -101,4 +96,5 @@ res = csp(assign, edges, domain)
 if res == 0:
     print("No solution!")
 else:
-    print("Solution: " + str(res))
+    for i in range(len(res)):
+        print("vertex = " + str (i) + ", color = " + str(res[i]))
